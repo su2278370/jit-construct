@@ -5,6 +5,8 @@ BIN = interpreter \
 CROSS_COMPILE = arm-linux-gnueabihf-
 QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
 LUA = lua
+X64 = jit-x64.dasc
+
 
 all: $(BIN)
 
@@ -42,8 +44,8 @@ jit0-x64: tests/jit0-x64.c
 jit-x64: dynasm-driver.c jit-x64.h
 	$(CC) $(CFLAGS) -o $@ -DJIT=\"jit-x64.h\" \
 		dynasm-driver.c
-jit-x64.h: jit-x64.dasc
-	        $(LUA) dynasm/dynasm.lua -o $@ jit-x64.dasc
+jit-x64.h: $(X64)
+	        $(LUA) dynasm/dynasm.lua -o $@ $(X64)
 run-jit-x64: jit-x64
 	./jit-x64 progs/hello.b && objdump -D -b binary \
 		-mi386 -Mx86-64 /tmp/jitcode
